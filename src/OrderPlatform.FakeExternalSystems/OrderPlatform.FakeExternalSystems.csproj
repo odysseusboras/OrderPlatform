@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrderPlatform.Integrations.Inventory.Contracts\OrderPlatform.Integrations.Inventory.Contracts.csproj" />
+    <ProjectReference Include="..\OrderPlatform.Integrations.Payments.Contracts\OrderPlatform.Integrations.Payments.Contracts.csproj" />
+    <ProjectReference Include="..\OrderPlatform.Integrations.Shipping.Contracts\OrderPlatform.Integrations.Shipping.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>
