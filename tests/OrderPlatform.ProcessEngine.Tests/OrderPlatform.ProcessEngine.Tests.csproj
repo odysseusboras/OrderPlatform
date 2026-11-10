@@ -10,6 +10,9 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OrderPlatform.ProcessEngine\OrderPlatform.ProcessEngine.csproj" />
+    <ProjectReference Include="..\..\src\Core\OrderPlatform.ProcessEngine\OrderPlatform.ProcessEngine.csproj" />
     <ProjectReference Include="..\OrderPlatform.TestUtilities\OrderPlatform.TestUtilities.csproj" />
   </ItemGroup>
 

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrderPlatform.BuildingBlocks\OrderPlatform.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\OrderPlatform.ProcessEngine\OrderPlatform.ProcessEngine.csproj" />
+    <ProjectReference Include="..\..\Modules\Catalog\OrderPlatform.Catalog\OrderPlatform.Catalog.csproj" />
+    <ProjectReference Include="..\..\Modules\Ordering\OrderPlatform.Ordering\OrderPlatform.Ordering.csproj" />
+  </ItemGroup>
+
+</Project>

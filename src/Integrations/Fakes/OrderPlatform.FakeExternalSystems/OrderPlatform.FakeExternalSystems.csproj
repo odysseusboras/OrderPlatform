@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrderPlatform.Ordering.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Inventory\OrderPlatform.Integrations.Inventory.Contracts\OrderPlatform.Integrations.Inventory.Contracts.csproj" />
+    <ProjectReference Include="..\..\Payments\OrderPlatform.Integrations.Payments.Contracts\OrderPlatform.Integrations.Payments.Contracts.csproj" />
+    <ProjectReference Include="..\..\Shipping\OrderPlatform.Integrations.Shipping.Contracts\OrderPlatform.Integrations.Shipping.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

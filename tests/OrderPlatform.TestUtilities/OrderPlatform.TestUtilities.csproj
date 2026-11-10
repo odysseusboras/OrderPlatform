@@ -5,7 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OrderPlatform.BuildingBlocks\OrderPlatform.BuildingBlocks.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Core\OrderPlatform.BuildingBlocks\OrderPlatform.BuildingBlocks.csproj" />
   </ItemGroup>
 
 </Project>

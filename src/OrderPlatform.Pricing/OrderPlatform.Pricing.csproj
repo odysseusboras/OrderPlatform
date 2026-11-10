@@ -1,9 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-  <ItemGroup>
-    <ProjectReference Include="..\OrderPlatform.BuildingBlocks\OrderPlatform.BuildingBlocks.csproj" />
-    <ProjectReference Include="..\OrderPlatform.Pricing.Contracts\OrderPlatform.Pricing.Contracts.csproj" />
-    <ProjectReference Include="..\OrderPlatform.Catalog.Contracts\OrderPlatform.Catalog.Contracts.csproj" />
-  </ItemGroup>
-
-</Project>

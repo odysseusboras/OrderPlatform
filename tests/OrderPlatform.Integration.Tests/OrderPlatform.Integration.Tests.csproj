@@ -10,6 +10,12 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OrderPlatform.Api\OrderPlatform.Api.csproj" />
+    <ProjectReference Include="..\..\src\Hosts\OrderPlatform.Api\OrderPlatform.Api.csproj" />
     <ProjectReference Include="..\OrderPlatform.TestUtilities\OrderPlatform.TestUtilities.csproj" />
   </ItemGroup>
 

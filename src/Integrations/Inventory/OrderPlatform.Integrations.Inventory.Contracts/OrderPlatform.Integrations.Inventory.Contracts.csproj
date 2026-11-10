@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\OrderPlatform.BuildingBlocks\OrderPlatform.BuildingBlocks.csproj" />
+  </ItemGroup>
+
+</Project>

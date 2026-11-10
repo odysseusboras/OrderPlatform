@@ -10,6 +10,9 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OrderPlatform.Pricing\OrderPlatform.Pricing.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Pricing\OrderPlatform.Pricing\OrderPlatform.Pricing.csproj" />
     <ProjectReference Include="..\OrderPlatform.TestUtilities\OrderPlatform.TestUtilities.csproj" />
   </ItemGroup>
 

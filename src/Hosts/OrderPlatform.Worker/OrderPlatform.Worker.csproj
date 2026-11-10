@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\OrderPlatform.Persistence\OrderPlatform.Persistence.csproj" />
+    <ProjectReference Include="..\..\Modules\Ordering\OrderPlatform.Ordering\OrderPlatform.Ordering.csproj" />
+    <ProjectReference Include="..\..\Modules\Catalog\OrderPlatform.Catalog\OrderPlatform.Catalog.csproj" />
+    <ProjectReference Include="..\..\Modules\Pricing\OrderPlatform.Pricing\OrderPlatform.Pricing.csproj" />
+    <ProjectReference Include="..\..\Core\OrderPlatform.ProcessEngine\OrderPlatform.ProcessEngine.csproj" />
+    <ProjectReference Include="..\..\Integrations\Inventory\OrderPlatform.Integrations.Inventory\OrderPlatform.Integrations.Inventory.csproj" />
+    <ProjectReference Include="..\..\Integrations\Payments\OrderPlatform.Integrations.Payments\OrderPlatform.Integrations.Payments.csproj" />
+    <ProjectReference Include="..\..\Integrations\Shipping\OrderPlatform.Integrations.Shipping\OrderPlatform.Integrations.Shipping.csproj" />
+    <ProjectReference Include="..\..\Integrations\Fakes\OrderPlatform.FakeExternalSystems\OrderPlatform.FakeExternalSystems.csproj" />
+  </ItemGroup>
+
+</Project>

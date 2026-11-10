@@ -1,0 +1,224 @@
+@baseUrl = https://localhost:49378
+@alice = 30000000-0000-0000-0000-000000000001
+@bob = 30000000-0000-0000-0000-000000000002
+@carrier = 30000000-0000-0000-0000-000000000009
+
+# Order Processing Platform: demo script
+# Start the API (profile "OrderPlatform.Api"), then send the requests from top to bottom.
+# In Development the API creates the database, seeds nine products and runs the background worker itself.
+# Demo sign-in: the X-User-Id header is the user, and the X-User-Role header with the value Carrier makes them the carrier.
+
+### PART 1. The catalog (no sign-in needed)
+
+### 1.1 Products on sale: first page, default page size 20
+GET {{baseUrl}}/api/offers
+
+### 1.2 Paging: page 2 with 4 per page (see totalCount, totalPages, hasNextPage)
+GET {{baseUrl}}/api/offers?pageNumber=2&pageSize=4
+
+### 1.3 Page size above the maximum of 100: 400 validation problem
+GET {{baseUrl}}/api/offers?pageSize=500
+
+### 1.4 One product (Mechanical keyboard): net price, VAT and gross price
+GET {{baseUrl}}/api/offers/20000000-0000-0000-0000-000000000003
+
+### PART 2. The life of an order (FR1 to FR7)
+
+### 2.1 Place an order and wait up to 5 seconds for the price.
+### The request itself reserves the stock, then calculates the price: 201 with status Priced,
+### subtotal, tax, shipping charge and total. Header Preference-Applied: wait=5.
+# @name placed
+POST {{baseUrl}}/api/orders
+X-User-Id: {{alice}}
+Prefer: wait=5
+Content-Type: application/json
+
+{
+  "lines": [
+    { "productId": "20000000-0000-0000-0000-000000000003", "quantity": 1 },
+    { "productId": "20000000-0000-0000-0000-000000000005", "quantity": 2 }
+  ],
+  "shippingAddress": {
+    "recipient": "Ada Lovelace",
+    "street": "1 Main St",
+    "city": "Athens",
+    "postalCode": "10557",
+    "countryCode": "GR"
+  },
+  "paymentToken": "tok_visa"
+}
+
+### 2.2 Get it a few seconds later. The worker has done the rest in the background:
+### payment authorized (Confirmed), shipment prepared, payment captured (Paid), shipment dispatched (Shipped).
+### statusHistory shows every change with its time. canCancel is still true: the order is not delivered yet.
+GET {{baseUrl}}/api/orders/{{placed.response.body.$.orderId}}
+X-User-Id: {{alice}}
+
+### 2.3 The customer tries to confirm the delivery herself: 403. Only the carrier may.
+POST {{baseUrl}}/api/orders/{{placed.response.body.$.orderId}}/delivered
+X-User-Id: {{alice}}
+
+### 2.4 The carrier confirms the delivery: 202. The pipeline was waiting for exactly this.
+POST {{baseUrl}}/api/orders/{{placed.response.body.$.orderId}}/delivered
+X-User-Id: {{carrier}}
+X-User-Role: Carrier
+
+### 2.5 Get it again: Delivered, the full history from Pending to Delivered
+GET {{baseUrl}}/api/orders/{{placed.response.body.$.orderId}}
+X-User-Id: {{alice}}
+
+### 2.6 Confirm the delivery a second time: 409 with code ordering.not_awaiting_delivery
+POST {{baseUrl}}/api/orders/{{placed.response.body.$.orderId}}/delivered
+X-User-Id: {{carrier}}
+X-User-Role: Carrier
+
+### 2.7 Place an order without waiting: 202 at once with status Pending and a Location header.
+### A digital product, so no shipping charge.
+# @name background
+POST {{baseUrl}}/api/orders
+X-User-Id: {{alice}}
+Content-Type: application/json
+
+{
+  "lines": [ { "productId": "20000000-0000-0000-0000-000000000007", "quantity": 1 } ],
+  "shippingAddress": { "recipient": "Ada Lovelace", "street": "1 Main St", "city": "Athens", "postalCode": "10557", "countryCode": "GR" },
+  "paymentToken": "tok_visa"
+}
+
+### 2.8 Poll it: priced and moved on by the worker
+GET {{baseUrl}}/api/orders/{{background.response.body.$.orderId}}
+X-User-Id: {{alice}}
+
+### PART 3. Security, paging and errors
+
+### 3.1 My orders, newest first, paged. Summaries only (status, total, item count).
+GET {{baseUrl}}/api/orders?pageNumber=1&pageSize=10
+X-User-Id: {{alice}}
+
+### 3.2 Another customer cannot see Alice's order: 404, not 403, so the order's existence is not revealed
+GET {{baseUrl}}/api/orders/{{placed.response.body.$.orderId}}
+X-User-Id: {{bob}}
+
+### 3.3 Bob has no orders: an empty page
+GET {{baseUrl}}/api/orders
+X-User-Id: {{bob}}
+
+### 3.4 Not signed in: 401
+GET {{baseUrl}}/api/orders
+
+### 3.5 Unknown product: 400 with code ordering.products_not_available
+POST {{baseUrl}}/api/orders
+X-User-Id: {{alice}}
+Content-Type: application/json
+
+{
+  "lines": [ { "productId": "99999999-0000-0000-0000-000000000000", "quantity": 1 } ],
+  "shippingAddress": { "recipient": "Ada Lovelace", "street": "1 Main St", "city": "Athens", "postalCode": "10557", "countryCode": "GR" },
+  "paymentToken": "tok_visa"
+}
+
+### 3.6 The same product twice: 400 with code ordering.duplicate_product
+POST {{baseUrl}}/api/orders
+X-User-Id: {{alice}}
+Content-Type: application/json
+
+{
+  "lines": [
+    { "productId": "20000000-0000-0000-0000-000000000002", "quantity": 1 },
+    { "productId": "20000000-0000-0000-0000-000000000002", "quantity": 3 }
+  ],
+  "shippingAddress": { "recipient": "Ada Lovelace", "street": "1 Main St", "city": "Athens", "postalCode": "10557", "countryCode": "GR" },
+  "paymentToken": "tok_visa"
+}
+
+### 3.7 Invalid request (no lines, quantity rules, missing address): 400 validation problem listing every field
+POST {{baseUrl}}/api/orders
+X-User-Id: {{alice}}
+Content-Type: application/json
+
+{
+  "lines": [],
+  "paymentToken": ""
+}
+
+### 3.8 Unknown order: 404 with code ordering.order_not_found and a traceId that is also in the logs
+GET {{baseUrl}}/api/orders/99999999-0000-0000-0000-000000000000
+X-User-Id: {{alice}}
+
+### Rate limiting is not in this script: the limit is 100 requests per minute per client.
+### To see the 429 with Retry-After, set RateLimiting:PermitLimit to 3 in appsettings.Development.json and resend 3.1.
+
+### PART 4. Cancel: the saga runs backward
+### An order can be cancelled until it is delivered. Every step done so far is undone in reverse order.
+
+### 4.1 Place an order and wait for the price. A second later the worker has shipped it.
+# @name toCancel
+POST {{baseUrl}}/api/orders
+X-User-Id: {{alice}}
+Prefer: wait=5
+Content-Type: application/json
+
+{
+  "lines": [ { "productId": "20000000-0000-0000-0000-000000000001", "quantity": 1 } ],
+  "shippingAddress": { "recipient": "Ada Lovelace", "street": "1 Main St", "city": "Athens", "postalCode": "10557", "countryCode": "GR" },
+  "paymentToken": "tok_visa"
+}
+
+### 4.2 Cancel the shipped order: 200 with status Cancelled. The parcel is recalled, the payment is refunded,
+### the shipment is cancelled and the stock is released. statusHistory ends with Shipped, then Cancelled.
+POST {{baseUrl}}/api/orders/{{toCancel.response.body.$.orderId}}/cancel
+X-User-Id: {{alice}}
+
+### 4.3 Cancel it again: 409 with code ordering.cannot_cancel
+POST {{baseUrl}}/api/orders/{{toCancel.response.body.$.orderId}}/cancel
+X-User-Id: {{alice}}
+
+### 4.4 Bob cannot cancel Alice's order: 404
+POST {{baseUrl}}/api/orders/{{toCancel.response.body.$.orderId}}/cancel
+X-User-Id: {{bob}}
+
+### 4.5 A delivered order is final: cancel the order of Part 2: 409 with code ordering.cannot_cancel
+POST {{baseUrl}}/api/orders/{{placed.response.body.$.orderId}}/cancel
+X-User-Id: {{alice}}
+
+### 4.6 Place an order on hold: it stops before the payment, stock reserved, nothing charged. 201, Priced.
+# @name held
+POST {{baseUrl}}/api/orders
+X-User-Id: {{alice}}
+Prefer: wait=5
+Content-Type: application/json
+
+{
+  "lines": [ { "productId": "20000000-0000-0000-0000-000000000002", "quantity": 2 } ],
+  "shippingAddress": { "recipient": "Ada Lovelace", "street": "1 Main St", "city": "Athens", "postalCode": "10557", "countryCode": "GR" },
+  "paymentToken": "tok_visa",
+  "holdBeforePayment": true
+}
+
+### 4.7 Release it: 202. The payment is authorized next and the order continues.
+### (Or cancel it here instead: only the stock is released, because nothing else was done yet.)
+POST {{baseUrl}}/api/orders/{{held.response.body.$.orderId}}/release
+X-User-Id: {{alice}}
+
+### 4.8 Get it a few seconds later: Shipped
+GET {{baseUrl}}/api/orders/{{held.response.body.$.orderId}}
+X-User-Id: {{alice}}
+
+### 4.9 Release it again: 409 with code ordering.not_on_hold
+POST {{baseUrl}}/api/orders/{{held.response.body.$.orderId}}/release
+X-User-Id: {{alice}}
+
+### PART 5 (optional). A rejected order
+### Add "MONITOR-27" to FakeExternalSystems:Inventory:OutOfStockSkus in appsettings.Development.json and restart.
+
+### 5.1 Out of stock: 201 with status Rejected and no price. Nothing was reserved or charged.
+POST {{baseUrl}}/api/orders
+X-User-Id: {{alice}}
+Prefer: wait=5
+Content-Type: application/json
+
+{
+  "lines": [ { "productId": "20000000-0000-0000-0000-000000000004", "quantity": 1 } ],
+  "shippingAddress": { "recipient": "Ada Lovelace", "street": "1 Main St", "city": "Athens", "postalCode": "10557", "countryCode": "GR" },
+  "paymentToken": "tok_visa"
+}

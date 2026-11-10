@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OrderPlatform.Api\OrderPlatform.Api.csproj" />
-    <ProjectReference Include="..\..\src\OrderPlatform.Worker\OrderPlatform.Worker.csproj" />
+    <ProjectReference Include="..\..\src\Hosts\OrderPlatform.Api\OrderPlatform.Api.csproj" />
+    <ProjectReference Include="..\..\src\Hosts\OrderPlatform.Worker\OrderPlatform.Worker.csproj" />
   </ItemGroup>
 
 </Project>

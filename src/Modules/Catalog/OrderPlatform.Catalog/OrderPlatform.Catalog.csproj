@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\OrderPlatform.BuildingBlocks\OrderPlatform.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\OrderPlatform.Catalog.Contracts\OrderPlatform.Catalog.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

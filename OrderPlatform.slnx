@@ -1,27 +1,49 @@
 <Solution>
-  <Folder Name="/src/">
-    <Project Path="src/OrderPlatform.Api/OrderPlatform.Api.csproj" />
-    <Project Path="src/OrderPlatform.BuildingBlocks/OrderPlatform.BuildingBlocks.csproj" />
-    <Project Path="src/OrderPlatform.Catalog.Contracts/OrderPlatform.Catalog.Contracts.csproj" />
-    <Project Path="src/OrderPlatform.Catalog/OrderPlatform.Catalog.csproj" />
-    <Project Path="src/OrderPlatform.FakeExternalSystems/OrderPlatform.FakeExternalSystems.csproj" />
-    <Project Path="src/OrderPlatform.Integrations.Inventory.Contracts/OrderPlatform.Integrations.Inventory.Contracts.csproj" />
-    <Project Path="src/OrderPlatform.Integrations.Inventory/OrderPlatform.Integrations.Inventory.csproj" />
-    <Project Path="src/OrderPlatform.Integrations.Payments.Contracts/OrderPlatform.Integrations.Payments.Contracts.csproj" />
-    <Project Path="src/OrderPlatform.Integrations.Payments/OrderPlatform.Integrations.Payments.csproj" />
-    <Project Path="src/OrderPlatform.Integrations.Shipping.Contracts/OrderPlatform.Integrations.Shipping.Contracts.csproj" />
-    <Project Path="src/OrderPlatform.Integrations.Shipping/OrderPlatform.Integrations.Shipping.csproj" />
-    <Project Path="src/OrderPlatform.Ordering/OrderPlatform.Ordering.csproj" />
-    <Project Path="src/OrderPlatform.Persistence/OrderPlatform.Persistence.csproj" />
-    <Project Path="src/OrderPlatform.Pricing.Contracts/OrderPlatform.Pricing.Contracts.csproj" />
-    <Project Path="src/OrderPlatform.Pricing/OrderPlatform.Pricing.csproj" />
-    <Project Path="src/OrderPlatform.ProcessEngine/OrderPlatform.ProcessEngine.csproj" />
-    <Project Path="src/OrderPlatform.Worker/OrderPlatform.Worker.csproj" />
+  <Folder Name="/src/" />
+  <Folder Name="/src/Hosts/">
+    <Project Path="src/Hosts/OrderPlatform.Api/OrderPlatform.Api.csproj" />
+    <Project Path="src/Hosts/OrderPlatform.Worker/OrderPlatform.Worker.csproj" />
+  </Folder>
+  <Folder Name="/src/Core/">
+    <Project Path="src/Core/OrderPlatform.BuildingBlocks/OrderPlatform.BuildingBlocks.csproj" />
+    <Project Path="src/Core/OrderPlatform.ProcessEngine/OrderPlatform.ProcessEngine.csproj" />
+    <Project Path="src/Core/OrderPlatform.Persistence/OrderPlatform.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Ordering/">
+    <Project Path="src/Modules/Ordering/OrderPlatform.Ordering/OrderPlatform.Ordering.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Catalog/">
+    <Project Path="src/Modules/Catalog/OrderPlatform.Catalog/OrderPlatform.Catalog.csproj" />
+    <Project Path="src/Modules/Catalog/OrderPlatform.Catalog.Contracts/OrderPlatform.Catalog.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Pricing/">
+    <Project Path="src/Modules/Pricing/OrderPlatform.Pricing/OrderPlatform.Pricing.csproj" />
+    <Project Path="src/Modules/Pricing/OrderPlatform.Pricing.Contracts/OrderPlatform.Pricing.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/src/Integrations/" />
+  <Folder Name="/src/Integrations/Inventory/">
+    <Project Path="src/Integrations/Inventory/OrderPlatform.Integrations.Inventory/OrderPlatform.Integrations.Inventory.csproj" />
+    <Project Path="src/Integrations/Inventory/OrderPlatform.Integrations.Inventory.Contracts/OrderPlatform.Integrations.Inventory.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/src/Integrations/Payments/">
+    <Project Path="src/Integrations/Payments/OrderPlatform.Integrations.Payments/OrderPlatform.Integrations.Payments.csproj" />
+    <Project Path="src/Integrations/Payments/OrderPlatform.Integrations.Payments.Contracts/OrderPlatform.Integrations.Payments.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/src/Integrations/Shipping/">
+    <Project Path="src/Integrations/Shipping/OrderPlatform.Integrations.Shipping/OrderPlatform.Integrations.Shipping.csproj" />
+    <Project Path="src/Integrations/Shipping/OrderPlatform.Integrations.Shipping.Contracts/OrderPlatform.Integrations.Shipping.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/src/Integrations/Fakes/">
+    <Project Path="src/Integrations/Fakes/OrderPlatform.FakeExternalSystems/OrderPlatform.FakeExternalSystems.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/OrderPlatform.Architecture.Tests/OrderPlatform.Architecture.Tests.csproj" />
+    <Project Path="tests/OrderPlatform.BuildingBlocks.Tests/OrderPlatform.BuildingBlocks.Tests.csproj" />
+    <Project Path="tests/OrderPlatform.Catalog.Tests/OrderPlatform.Catalog.Tests.csproj" />
     <Project Path="tests/OrderPlatform.Integration.Tests/OrderPlatform.Integration.Tests.csproj" />
     <Project Path="tests/OrderPlatform.Ordering.Tests/OrderPlatform.Ordering.Tests.csproj" />
+    <Project Path="tests/OrderPlatform.Persistence.Tests/OrderPlatform.Persistence.Tests.csproj" />
     <Project Path="tests/OrderPlatform.Pricing.Tests/OrderPlatform.Pricing.Tests.csproj" />
     <Project Path="tests/OrderPlatform.ProcessEngine.Tests/OrderPlatform.ProcessEngine.Tests.csproj" />
     <Project Path="tests/OrderPlatform.TestUtilities/OrderPlatform.TestUtilities.csproj" />

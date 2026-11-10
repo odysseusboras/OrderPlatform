@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\OrderPlatform.BuildingBlocks\OrderPlatform.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\OrderPlatform.Integrations.Shipping.Contracts\OrderPlatform.Integrations.Shipping.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

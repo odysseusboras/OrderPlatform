@@ -1,0 +1,22 @@
+{
+  "profiles": {
+    "OrderPlatform.Api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "scalar",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:49378;http://localhost:49379"
+    },
+    "OrderPlatform.Api (worker paused)": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "commandLineArgs": "--Pipeline:RunWorkerInApi=false",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:49378;http://localhost:49379"
+    }
+  }
+}

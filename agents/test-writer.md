@@ -10,7 +10,7 @@ You write the unit tests for the Order Processing Platform. Every change to prod
 
 - Write and edit files **only under `tests/`**. Never change production code. If the code cannot be tested without a change (for example, it calls `DateTime.UtcNow` or creates its own dependencies), stop and report what blocks testing and which change would fix it.
 - Follow the testing section of `CLAUDE.md`: xUnit, NSubstitute for mocks, hand-written fakes for external systems, `FakeTimeProvider` for anything time based, names `Method_Scenario_ExpectedResult`, Arrange / Act / Assert, one behaviour per test.
-- Never use the EF InMemory provider. Database behaviour goes in integration tests with Testcontainers.
+- Never use the EF InMemory provider. Tests that need a database use `SqliteTestDatabase` from the test utilities project.
 - Never use the em dash character.
 
 ## Steps

@@ -13,7 +13,7 @@ Read `docs/REQUIREMENTS.md` before the first change of a session. It says what w
 ## 2. Principles
 
 ### SOLID, applied to this repository
-- **Single responsibility:** one reason to change per class. A pipeline step does one external action and its undo. An endpoint maps HTTP to a use case and back; it holds no business rules.
+- **Single responsibility:** one reason to change per class. A pipeline step does one external action and its undo. A controller maps HTTP to a use case and back; it holds no business rules.
 - **Open/closed:** extend through the existing extension points: a new pipeline step, a new pipeline version, a new `IPricingRule`, a new gateway implementation. Do not add `if`/`switch` chains on types or providers.
 - **Liskov:** every implementation of an interface honours the full contract, including cancellation, idempotency and error mapping. A fake behaves like the real system, including its failures.
 - **Interface segregation:** small, focused interfaces (`IInventoryGateway`, not `IExternalSystems`). Consumers depend only on what they call.
@@ -27,7 +27,7 @@ Read `docs/REQUIREMENTS.md` before the first change of a session. It says what w
 - No premature generalisation: build what a requirement needs. The saga engine is a deliberate, documented exception (see ADR 0002).
 
 ### Reusable code
-- Shared concepts live in `BuildingBlocks` (Money, Result, IAuditable, ICurrentUser, SystemUser). Add to it only when a second module needs the same thing.
+- Shared concepts live in `BuildingBlocks` (Money, Result, Entity, AuditableEntity, ICurrentUser, SystemUser). Add to it only when a second module needs the same thing.
 - Rule of three: duplicate once if you must, extract on the third occurrence.
 - Test helpers (builders, fakes, fixtures) are shared through a test utilities project, not copied between test projects.
 
@@ -37,10 +37,10 @@ These rules are enforced by `tests/Architecture.Tests`. A change that breaks the
 
 | Project | Owns | May reference |
 |---|---|---|
-| `OrderPlatform.Api` | Endpoints, auth, ProblemDetails, health, SignalR hub, outbox dispatcher, DI wiring | Everything (composition root) |
-| `OrderPlatform.Worker` | Background service that runs due pipeline runs | Everything (composition root) |
-| `BuildingBlocks` | Money, Result, IAuditable, ICurrentUser, SystemUser | Nothing |
-| `ProcessEngine` | Step contract, base step, runner, registry, run entities (schema `process`) | BuildingBlocks only. It knows nothing about orders |
+| `OrderPlatform.Api` | Controllers, sign-in, ProblemDetails, rate limiting, DI wiring. Runs the pipeline worker too in Development | Everything (composition root) |
+| `OrderPlatform.Worker` | Hosts the pipeline worker (`AddPipelineWorker`), which moves due runs forward as the system user | Everything (composition root) |
+| `BuildingBlocks` | Money, Result, IEntity / Entity, IAuditableEntity / AuditableEntity, ICurrentUser, SystemUser | Nothing |
+| `ProcessEngine` | Step contract, definition validation, executor, inline runner, background worker, run entities and their mapping (schema `process`), run store | BuildingBlocks and EF Core (through the base `DbContext`). It knows nothing about orders |
 | `Modules.Ordering` | Order aggregate, status rules, status history, the 7 steps, pipeline V1, use cases (schema `ordering`) | ProcessEngine, BuildingBlocks, any `*.Contracts` |
 | `Modules.Catalog` (+ `.Contracts`) | Products, prices, tax categories, shipping rates (schema `catalog`) | BuildingBlocks |
 | `Modules.Pricing` (+ `.Contracts`) | Pricing service and `IPricingRule` implementations | BuildingBlocks, Catalog.Contracts |
@@ -51,8 +51,12 @@ These rules are enforced by `tests/Architecture.Tests`. A change that breaks the
 Further rules:
 - A module never references another module's implementation project, only its `.Contracts`.
 - Each module owns its entity configurations and its schema. There is one `AppDbContext` that applies them.
-- A pipeline step only changes the run context. It never calls `SaveChanges`. The runner saves context, step status, attempts, order status, history and outbox in **one transaction**.
-- Every call to an external system sends an idempotency key `{runId}:{stepKey}:{Execute|Compensate}`.
+- Modules read and write through the base `DbContext` type registered by Persistence, never through `AppDbContext`, so they never reference the Persistence project.
+- Schema changes always come with a migration (`dotnet ef migrations add <Name> --project src/Core/OrderPlatform.Persistence --startup-project src/Core/OrderPlatform.Persistence --output-dir Migrations`). A test fails when the model and the migrations differ.
+- A pipeline step only changes the run context. It never calls `SaveChanges`. The executor advances a run by one step in memory; its caller (the worker) saves context, step status, attempts, order status, history and outbox in **one transaction**.
+- A business module follows its runs through `IPipelineObserver<TContext>` (for example the order status). Observers change entities only; the caller saves them with the run.
+- A pipeline definition is validated when it is registered (`AddPipeline`): unique step keys, at most one pivot, compensatable steps before the pivot and forward-only steps after it.
+- Every call to an external system sends an idempotency key `{orderId}:{stepKey}:{Execute|Compensate}` (`GatewayStepResults.IdempotencyKey`), and every step maps the gateway answer to a step result through `GatewayStepResults.ToStepResult`.
 - The pipeline definition lives in code. A change to the steps is a new pipeline version; never edit a released version.
 
 ## 4. .NET conventions
@@ -62,11 +66,16 @@ Further rules:
 - Time comes from `TimeProvider`. Never call `DateTime.Now` or `DateTime.UtcNow`.
 - Money is always the `Money` type, never a raw `decimal`. Rounding rules live in one place.
 - Enums are stored as strings in the database.
+- Every entity table is a SQL Server temporal table, so every change is kept in a history table. `AppDbContext` applies this to all entities; do not configure it per entity.
+- Value objects (for example an address) are mapped as complex properties, not owned entities.
+- Every persisted entity inherits `Entity` (identity only) or `AuditableEntity` (identity plus audit fields). Never declare an `Id` yourself. Ids are created in code (version 7 Guid), never by the database; `AppDbContext` maps them that way for every entity.
 - Entities have private setters and behaviour methods; invariants are enforced inside the aggregate.
-- Minimal APIs. Expected failures return `Result` and map to ProblemDetails. Exceptions are for the unexpected only.
+- API endpoints are controllers in `OrderPlatform.Api/Controllers` (`[ApiController]`, one controller per resource), with request and response models in `OrderPlatform.Api/Models`. Controllers only map HTTP to a module service and back. Expected failures return `Result` and map to ProblemDetails. Exceptions are for the unexpected only.
+- Every list endpoint is paged (`PageRequest`, `Page<T>`, maximum page size 100) and pages in the database, never in memory.
+- Errors are never handled per controller: the global exception handler and problem details setup produce every error response. Never return exception messages or stack traces to clients.
 - Configuration through the Options pattern with validation on start.
 - Structured logging with `ILogger<T>` and message templates (no string interpolation in log calls).
-- Auditing through `IAuditable` and the SaveChanges interceptor. The worker writes as the seeded system user.
+- Auditing through `IAuditableEntity` and the SaveChanges interceptor. The worker writes as the seeded system user.
 
 ## 5. Testing
 
@@ -74,7 +83,7 @@ Further rules:
 - xUnit, NSubstitute for mocks, hand-written fakes for external systems, `FakeTimeProvider` for anything time based.
 - Test names: `Method_Scenario_ExpectedResult`. Arrange, Act, Assert, one behaviour per test.
 - Cover the happy path, every failure branch and the edge cases (empty, zero, boundaries, cancellation).
-- Integration tests use a real SQL Server through Testcontainers, never the EF InMemory provider.
+- Module and engine tests that need a database use `SqliteTestDatabase` (TestUtilities), never the EF InMemory provider. SQL Server specifics are covered by the persistence model tests; tests against a real SQL Server are still to add.
 - Tests never depend on each other or on execution order.
 
 ## 6. Workflow for every change

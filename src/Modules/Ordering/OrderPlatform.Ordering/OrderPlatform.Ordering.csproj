@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrderPlatform.Ordering.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\OrderPlatform.BuildingBlocks\OrderPlatform.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\..\..\Core\OrderPlatform.ProcessEngine\OrderPlatform.ProcessEngine.csproj" />
+    <ProjectReference Include="..\..\Catalog\OrderPlatform.Catalog.Contracts\OrderPlatform.Catalog.Contracts.csproj" />
+    <ProjectReference Include="..\..\Pricing\OrderPlatform.Pricing.Contracts\OrderPlatform.Pricing.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Integrations\Inventory\OrderPlatform.Integrations.Inventory.Contracts\OrderPlatform.Integrations.Inventory.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Integrations\Payments\OrderPlatform.Integrations.Payments.Contracts\OrderPlatform.Integrations.Payments.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Integrations\Shipping\OrderPlatform.Integrations.Shipping.Contracts\OrderPlatform.Integrations.Shipping.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

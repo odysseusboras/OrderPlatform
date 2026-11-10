@@ -10,6 +10,7 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OrderPlatform.Ordering\OrderPlatform.Ordering.csproj" />
-    <ProjectReference Include="..\..\src\OrderPlatform.FakeExternalSystems\OrderPlatform.FakeExternalSystems.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Ordering\OrderPlatform.Ordering\OrderPlatform.Ordering.csproj" />
+    <ProjectReference Include="..\..\src\Integrations\Fakes\OrderPlatform.FakeExternalSystems\OrderPlatform.FakeExternalSystems.csproj" />
     <ProjectReference Include="..\OrderPlatform.TestUtilities\OrderPlatform.TestUtilities.csproj" />
   </ItemGroup>
 
